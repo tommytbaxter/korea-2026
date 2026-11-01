@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korea 2026 Videos</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Videos from our trip through Korea, October 13–25, 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+.feature{margin-bottom:34px;max-width:960px}
+.feature h2,.section h2{font-family:var(--display);font-size:24px;margin:0 0 4px}
+.feature p,.section>p{color:var(--muted);margin:0 0 14px;max-width:64ch}
+.player{position:relative;aspect-ratio:16/9;background:#0d1210;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.player iframe,.player video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.placeholder{display:grid;place-items:center;text-align:center;color:#c9d4cf;padding:20px;
+  background:radial-gradient(120% 120% at 30% 20%,#24312c,#0d1210)}
+.placeholder b{font-family:var(--display);font-size:22px;color:#eef3f0;display:block;margin-bottom:6px}
+.placeholder span{font-size:14px;color:#9fb0a9}
+.section{border-top:1px solid var(--line);padding-top:20px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card .player{border:0;border-radius:0}
+.card .body{padding:10px 12px 12px}
+.card .t{font-weight:600;font-size:15px;line-height:1.3}
+.card .m{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px}
+.card .m .sw{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.card .n{font-size:13.5px;color:var(--muted);margin-top:4px}
+.empty{padding:28px;border:1px dashed var(--line);border-radius:6px;color:var(--muted);text-align:center;background:var(--panel)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="sitenav" aria-label="Site">
+    <a class="brand" href="./">Korea <span>2026</span></a>
+    <div class="links"><a href="./">Timeline</a><a href="photos.html">Photos</a><a href="videos.html" aria-current="page">Videos</a></div>
+  </nav>
+  <header class="pagehead">
+    <div class="eyebrow">Videos · October 13–25, 2026</div>
+    <h1>Videos</h1>
+    <p>The trip film, plus short clips from each day.</p>
+  </header>
+
+  <section class="feature" id="feature"></section>
+  <section class="section">
+    <h2>Clips by day</h2>
+    <p>Moments from along the way, in trip order.</p>
+    <nav class="chips" id="chips" aria-label="Filter by day"></nav>
+    <div id="clips"></div>
+  </section>
+  <footer class="sitefoot">Videos play from YouTube or Vimeo so the site stays fast.</footer>
+</div>
+
+<script>
+/* ---------- Video list: edit here ----------
+   film:  the main trip video (or null until it's ready)
+   clips: one entry per clip. "day" is the trip date (2026-10-14 … 2026-10-25).
+   Each video uses ONE of: youtube (the video ID), vimeo (the ID), or src (a small .mp4 in /videos).
+*/
+const FILM = null; // e.g. {title:"Korea 2026", youtube:"VIDEO_ID", note:"The full trip, about 14 minutes."}
+const CLIPS = [
+  // {title:"Heart swing, Sokcho", day:"2026-10-18", youtube:"VIDEO_ID", note:""},
+];
+/* ------------------------------------------- */
+
+const DAYS=["2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25"];
+const COLORS=["#c0392b","#2a7fb0","#3d8f7a","#d08a16","#7b57b0","#c2477a","#5a8a24","#1f5f8b","#a0522d","#2b8a8a","#8a6d1f","#6a4c93"];
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dlabel=iso=>{const d=new Date(iso+"T12:00:00");return `${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`};
+// Timeline colors start on Oct 14 (day 1); arrival day Oct 13 borrows the last color
+const colorFor=iso=>{const i=DAYS.indexOf(iso)-1;return COLORS[(i<0?COLORS.length-1:i)%COLORS.length]};
+
+function player(v){
+  if(v.youtube) return `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.youtube)}?rel=0" title="${esc(v.title)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  if(v.vimeo) return `<iframe src="https://player.vimeo.com/video/${encodeURIComponent(v.vimeo)}?dnt=1" title="${esc(v.title)}" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  if(v.src) return `<video src="${esc(v.src)}" controls preload="metadata" playsinline></video>`;
+  return "";
+}
+
+const feat=document.getElementById("feature");
+feat.innerHTML = FILM
+  ? `<h2>${esc(FILM.title)}</h2>${FILM.note?`<p>${esc(FILM.note)}</p>`:""}<div class="player">${player(FILM)}</div>`
+  : `<h2>The trip film</h2><p>The edited film of the whole trip will go here.</p>
+     <div class="player placeholder"><div><b>Coming soon</b><span>Being edited from 818 clips</span></div></div>`;
+
+const clipsEl=document.getElementById("clips"),chips=document.getElementById("chips");
+function renderClips(filter){
+  const list=CLIPS.filter(c=>filter==="all"||c.day===filter).sort((a,b)=>DAYS.indexOf(a.day)-DAYS.indexOf(b.day));
+  if(!list.length){clipsEl.innerHTML=`<div class="empty">${CLIPS.length?"No clips for this day yet.":"Clips will appear here as they're added."}</div>`;return}
+  clipsEl.innerHTML=`<div class="vgrid">${list.map(c=>`<article class="card" style="--c:${colorFor(c.day)}">
+    <div class="player">${player(c)}</div>
+    <div class="body"><div class="t">${esc(c.title)}</div><div class="m"><span class="sw"></span>${dlabel(c.day)}</div>${c.note?`<div class="n">${esc(c.note)}</div>`:""}</div>
+  </article>`).join("")}</div>`;
+}
+const used=[...new Set(CLIPS.map(c=>c.day))].sort((a,b)=>DAYS.indexOf(a)-DAYS.indexOf(b));
+if(used.length>1){
+  const mk=(label,val,c)=>{const b=document.createElement("button");b.type="button";b.dataset.v=val;if(c)b.style.setProperty("--c",c);
+    b.innerHTML=(c?'<span class="sw"></span>':"")+esc(label);b.setAttribute("aria-pressed",val==="all"?"true":"false");chips.appendChild(b)};
+  mk("All days","all");used.forEach(d=>mk(dlabel(d),d,colorFor(d)));
+  chips.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));renderClips(b.dataset.v)});
+}else chips.remove();
+renderClips("all");
+</script>
+</body></html>

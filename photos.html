@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korea 2026 Photos</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Photos from our trip through Korea, October 13–25, 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+.day{scroll-margin-top:64px;padding-block:8px 28px;border-top:1px solid var(--line)}
+.day:first-child{border-top:0}
+.dayhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-block:14px 14px}
+.dayhead .n{font-family:var(--display);font-size:36px;line-height:1;color:var(--c)}
+.dayhead h2{font-family:var(--display);font-size:22px;margin:0;line-height:1.2}
+.dayhead .meta{font-size:13px;color:var(--muted)}
+.dayhead a{font-size:13px;color:var(--accent);text-decoration:none;margin-left:auto}
+.dayhead a:hover{text-decoration:underline}
+.gallery{--h:210px;display:flex;flex-wrap:wrap;gap:8px}
+.gallery::after{content:"";flex-grow:999}
+.tile{all:unset;--ar:1.333;flex:var(--ar) 1 calc(var(--ar) * var(--h));height:var(--h);max-width:100%;cursor:zoom-in;position:relative;border-radius:5px;overflow:hidden;background:var(--line)}
+.tile img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.tile:hover img{transform:scale(1.03)}
+.tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tile .cap{position:absolute;inset:auto 0 0 0;padding:18px 9px 6px;font-size:12px;color:#fff;
+  background:linear-gradient(transparent,rgba(0,0,0,.65));opacity:0;transition:opacity .2s;display:flex;justify-content:space-between;gap:8px}
+.tile .cap .m{font-family:var(--mono);opacity:.85;white-space:nowrap}
+.tile:hover .cap,.tile:focus-visible .cap{opacity:1}
+@media (hover:none){.tile .cap{opacity:1}}
+dialog{border:0;padding:0;background:transparent;max-width:min(94vw,1100px)}
+dialog::backdrop{background:rgba(10,14,12,.9)}
+dialog img{max-height:80vh;width:auto;max-width:100%;border-radius:4px;display:block;margin:0 auto}
+dialog .lcap{color:#e9efec;font-size:14px;margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+dialog .lcap b{font-weight:600}
+dialog .lcap .m{font-family:var(--mono);color:#a9b8b1}
+dialog .x{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));font:600 14px var(--body);color:#fff;background:rgba(255,255,255,.14);border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+.nav2{position:fixed;top:50%;transform:translateY(-50%);font:600 26px var(--body);color:#fff;background:rgba(255,255,255,.14);border:0;border-radius:999px;width:44px;height:44px;cursor:pointer}
+.prev{left:calc(10px + env(safe-area-inset-left,0px))}.next{right:calc(10px + env(safe-area-inset-right,0px))}
+@media (max-width:600px){.gallery{--h:130px;gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="sitenav" aria-label="Site">
+    <a class="brand" href="./">Korea <span>2026</span></a>
+    <div class="links"><a href="./">Timeline</a><a href="photos.html" aria-current="page">Photos</a><a href="videos.html">Videos</a></div>
+  </nav>
+  <header class="pagehead">
+    <div class="eyebrow">Photos · October 13–25, 2026</div>
+    <h1>Photos</h1>
+    <p id="sub"></p>
+  </header>
+  <nav class="chips" id="chips" aria-label="Filter by day"></nav>
+  <main id="days"></main>
+  <footer class="sitefoot">Times are Korea time as recorded by the camera. Tap any photo to see it larger.</footer>
+</div>
+
+<dialog id="lb" aria-label="Photo viewer">
+  <button class="x" id="lbx" type="button">Close</button>
+  <button class="nav2 prev" id="lbp" type="button" aria-label="Previous photo">‹</button>
+  <button class="nav2 next" id="lbn" type="button" aria-label="Next photo">›</button>
+  <img id="lbimg" alt="">
+  <div class="lcap"><span id="lbcap"></span><span class="m" id="lbmeta"></span></div>
+</dialog>
+
+<script src="trip-data.js"></script>
+<script>
+const COLORS=["#c0392b","#2a7fb0","#3d8f7a","#d08a16","#7b57b0","#c2477a","#5a8a24","#1f5f8b","#a0522d","#2b8a8a","#8a6d1f","#6a4c93"];
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dlabel=iso=>{const d=new Date(iso+"T12:00:00");return `${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`};
+const t12=t=>{if(!t)return"";let[h,m]=t.split(":").map(Number);const ap=h<12?"AM":"PM";h=h%12||12;return `${h}:${String(m).padStart(2,"0")} ${ap}`};
+
+const ALL=[]; // flat list for the viewer, in trip order
+const daysEl=document.getElementById("days"), chips=document.getElementById("chips");
+document.getElementById("sub").textContent=`${TRIP.nphotos} photos across ${TRIP.days.length} days, in the order we took them.`;
+
+TRIP.days.forEach((day,di)=>{
+  const c=COLORS[di%COLORS.length];
+  const photos=day.stops.flatMap(s=>s.photos.map(p=>({...p,place:p.place||s.place})));
+  const sec=document.createElement("section");
+  sec.className="day";sec.id="day"+di;sec.style.setProperty("--c",c);
+  sec.innerHTML=`<div class="dayhead"><span class="n">${di+1}</span><h2>${esc(day.title)}</h2>
+    <span class="meta">${dlabel(day.date)} · ${photos.length} photos</span>
+    <a href="./#day${di}">See on the timeline →</a></div><div class="gallery"></div>`;
+  const g=sec.querySelector(".gallery");
+  photos.forEach(p=>{
+    const i=ALL.length; ALL.push({...p,day:di});
+    const b=document.createElement("button");
+    b.className="tile";b.type="button";b.dataset.i=i;
+    b.setAttribute("aria-label",`${p.place}${p.time?", "+t12(p.time):""}`);
+    b.innerHTML=`<img src="thumbs/${encodeURIComponent(p.thumb)}" alt="${esc(p.note||p.place)}" loading="lazy" decoding="async" onload="this.parentNode.style.setProperty('--ar',(this.naturalWidth/this.naturalHeight).toFixed(3))">
+      <span class="cap"><span>${esc(p.place)}</span><span class="m">${t12(p.time)}</span></span>`;
+    g.appendChild(b);
+  });
+  daysEl.appendChild(sec);
+});
+
+// Day filter
+function chip(label,c,val){const b=document.createElement("button");b.type="button";b.dataset.v=val;
+  if(c)b.style.setProperty("--c",c);b.innerHTML=(c?'<span class="sw"></span>':"")+esc(label);chips.appendChild(b);return b}
+chip("All days",null,"all").setAttribute("aria-pressed","true");
+TRIP.days.forEach((d,i)=>chip(dlabel(d.date),COLORS[i%COLORS.length],String(i)).setAttribute("aria-pressed","false"));
+chips.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+  document.querySelectorAll(".day").forEach((s,i)=>{s.hidden=!(b.dataset.v==="all"||b.dataset.v===String(i))});
+  window.scrollTo({top:daysEl.offsetTop-60,behavior:"smooth"});
+});
+
+// Viewer
+const lb=document.getElementById("lb"),img=document.getElementById("lbimg"),cap=document.getElementById("lbcap"),meta=document.getElementById("lbmeta");
+let cur=0;
+function visible(){return ALL.map((p,i)=>i).filter(i=>!document.getElementById("day"+ALL[i].day).hidden)}
+function show(i){cur=i;const p=ALL[i];img.src="thumbs/"+encodeURIComponent(p.thumb);img.alt=p.note||p.place;
+  cap.innerHTML=`<b>${esc(p.place)}</b>${p.note?" · "+esc(p.note):""}`;
+  meta.textContent=`${dlabel(p.date||TRIP.days[p.day].date)}${p.time?" · "+t12(p.time):""}`}
+function step(d){const v=visible();const k=v.indexOf(cur);show(v[(k+d+v.length)%v.length])}
+daysEl.addEventListener("click",e=>{const b=e.target.closest(".tile");if(!b)return;show(+b.dataset.i);lb.showModal()});
+document.getElementById("lbx").onclick=()=>lb.close();
+document.getElementById("lbp").onclick=()=>step(-1);
+document.getElementById("lbn").onclick=()=>step(1);
+lb.addEventListener("click",e=>{if(e.target===lb)lb.close()});
+document.addEventListener("keydown",e=>{if(!lb.open)return;if(e.key==="ArrowLeft")step(-1);if(e.key==="ArrowRight")step(1)});
+let sx=null;lb.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
+lb.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)step(dx<0?1:-1);sx=null});
+</script>
+</body></html>

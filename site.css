@@ -1,0 +1,45 @@
+/* Shared look for all pages: celadon ground, dancheong accents (matches the Timeline) */
+:root{
+  --bg:#eef2ef; --panel:#f8faf8; --ink:#1d2622; --muted:#5d6b65; --line:#cfd9d4;
+  --accent:#b8452f;
+  --display:"Gowun Batang","Noto Serif KR",Georgia,serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a18; --panel:#1b2320; --ink:#e4ebe7; --muted:#97a69f; --line:#2c3833; --accent:#e0745d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a18; --panel:#1b2320; --ink:#e4ebe7; --muted:#97a69f; --line:#2c3833; --accent:#e0745d; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding:28px max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+img{max-width:100%}
+
+/* Site menu */
+.sitenav{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;
+  padding-bottom:14px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.sitenav .brand{font-family:var(--display);font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;letter-spacing:.01em}
+.sitenav .brand span{color:var(--accent)}
+.sitenav .links{display:flex;gap:4px;flex-wrap:wrap}
+.sitenav .links a{font:500 14px var(--body);color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:999px;border:1px solid transparent}
+.sitenav .links a:hover{color:var(--ink);border-color:var(--line)}
+.sitenav .links a[aria-current="page"]{color:var(--ink);background:var(--panel);border-color:var(--line);box-shadow:inset 0 -2px 0 var(--accent)}
+.sitenav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Page headers */
+.pagehead{display:grid;gap:10px;margin-bottom:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pagehead h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.1;margin:0;text-wrap:balance}
+.pagehead p{margin:0;color:var(--muted);max-width:64ch}
+
+/* Day filter chips */
+.chips{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding-block:10px;margin-bottom:8px;scrollbar-width:none}
+.chips button{flex:0 0 auto;font:500 13px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.chips button .sw{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chips button[aria-pressed="true"]{border-color:var(--c,var(--ink));box-shadow:inset 0 0 0 1px var(--c,var(--ink))}
+.chips button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+footer.sitefoot{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
